@@ -2,10 +2,12 @@ package com.technumen.newcustapp.controller;
 
 import com.technumen.newcustapp.model.Customer;
 import com.technumen.newcustapp.repository.CustRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class NewcustappController {
     private final CustRepository repository;
@@ -26,6 +28,12 @@ public class NewcustappController {
         return repository.findAll();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Customer> getCustomer(@PathVariable Long id) {
+        return repository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
     //Update
     @PutMapping("/{id}")
     public Customer updateUser(@RequestBody Customer customer, @PathVariable Long id) {
@@ -33,15 +41,20 @@ public class NewcustappController {
                 .map(cust -> {
                     cust.setFirstName(customer.getFirstName());
                     cust.setLastName(customer.getLastName());
+                    cust.setId(customer.getId());
                     return repository.save(cust);
                 })
-                .orElseGet(() -> {return repository.save(customer);
-                });
+                .orElseGet(() -> repository.save(customer));
     }
 
     //Delete
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
-        repository.deleteById(id);
+    public boolean deleteUser(@PathVariable Long id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
