@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "https://apifrontend.up.railway.app/")
+@CrossOrigin(origins = "https://apifrontend.up.railway.app")
 @RestController
 public class NewcustappController {
     private final CustRepository repository;
